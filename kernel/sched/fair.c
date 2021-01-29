@@ -6395,25 +6395,29 @@ schedtune_cpu_margin(unsigned long util, int cpu)
 static inline unsigned long
 boosted_task_util(struct task_struct *task)
 {
+#ifdef CONFIG_UCLAMP_TASK_GROUP
+	unsigned long util = task_util(task);
+	unsigned long util_min = uclamp_eff_value(task, UCLAMP_MIN);
+	unsigned long util_max = uclamp_eff_value(task, UCLAMP_MAX);
+	return clamp(util, util_min, util_max);
+#endif
+#ifdef CONFIG_SCHED_TUNE
 	unsigned long util = task_util_est(task);
 	long margin = schedtune_task_margin(task);
 	unsigned long ret_value;
 #ifdef CONFIG_PERF_MGR
 	unsigned long fps_util;
 #endif
-
-	ret_value = util + margin;
 #ifdef CONFIG_PERF_MGR
-
 	if (task->drawing_flag){
 		fps_util = get_max_fps_util(task->drawing_flag);
 		ret_value = max(ret_value, fps_util);
 	}
-
 #endif
 	trace_sched_boost_task(task, util, margin);
 
 	return ret_value;
+#endif
 }
 
 static unsigned long cpu_util_without(int cpu, struct task_struct *p);
@@ -7231,7 +7235,6 @@ static void find_best_target(struct sched_domain *sd, cpumask_t *cpus,
 
 			if (sched_cpu_high_irqload(i))
 				continue;
-
 			if (fbt_env->skip_cpu == i)
 				continue;
 #ifdef CONFIG_SCHED_SEC_TASK_BOOST
