@@ -1059,11 +1059,11 @@ static int exec_mmap(struct mm_struct *mm)
 	task_lock(tsk);
 	active_mm = tsk->active_mm;
 	tsk->mm = mm;
-	lru_gen_add_mm(mm);
 	tsk->active_mm = mm;
 	activate_mm(active_mm, mm);
 	lru_gen_use_mm(mm);
 	tsk->mm->vmacache_seqnum = 0;
+	lru_gen_add_mm(mm);
 	vmacache_flush(tsk);
 #ifdef CONFIG_KDP_CRED
 	if(rkp_cred_enable)
