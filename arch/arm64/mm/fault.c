@@ -333,11 +333,6 @@ static void __do_kernel_fault(unsigned long addr, unsigned int esr,
 
 static void __do_user_fault(struct siginfo *info, unsigned int esr)
 {
-	if (IS_ENABLED(CONFIG_SEC_DEBUG) && current->pid == 0x1) {
-		pr_err("[%s] trap before tragedy\n", current->comm);
-		panic("init");
-	}
-
 	current->thread.fault_address = (unsigned long)info->si_addr;
 
 	/*
