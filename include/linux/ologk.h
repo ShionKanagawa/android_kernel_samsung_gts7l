@@ -1,3 +1,4 @@
+ 
 #ifndef _OLOG_KERNEL_H_
 #define _OLOG_KERNEL_H_
 

@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 export ARCH=arm64
 mkdir out
